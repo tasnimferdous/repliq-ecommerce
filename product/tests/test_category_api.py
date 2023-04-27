@@ -19,6 +19,15 @@ def detail_url(category_id):
     """Create and return a category detail url."""
     return reverse('product:category-detail', args=[category_id])
 
+def create_category(user = None, **params):
+    """Create and return a sample category"""
+    category = {
+        'category_name': 'sample category',
+    }
+    category.update(params)
+    category = Category.objects.create(user = user, **params)
+    return category
+
 
 def create_user(email='user@example.com', password='testpass123'):
     """Create and return a user."""
@@ -59,3 +68,29 @@ class PrivateCategoriesApiTests(TestCase):
         self.assertEqual(category.user, self.user)
         self.assertEqual(res.data['category_name'], category.category_name)
         # self.assertNotIn('password', res.data)
+    
+    def test_update_category_success(self):
+        """Test update of a category"""
+        # original_color = 'Maroon'
+        category = create_category(
+            user = self.user,
+            category_name = 'test category',
+        )
+        payload = {'category_name':'updated category'}
+        url = detail_url(category.id)
+        res = self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        category.refresh_from_db()
+        self.assertEqual(category.category_name, payload['category_name'])
+        self.assertEqual(category.user, self.user)
+    
+    def test_delete_category(self):
+        """Test deleting a category successful."""
+        category = create_category(user=self.user, category_name='test category')
+
+        url = detail_url(category.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Category.objects.filter(id=category.id).exists())
