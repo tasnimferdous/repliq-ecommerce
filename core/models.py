@@ -81,16 +81,35 @@ class Discount(models.Model):
         return self.discount_title
 
 
+class TagConnector(models.Model):
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.product)+' - '+str(self.category)
+
+class CategoryConnector(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.product)+' - '+str(self.category)
+
+
+class DiscountConnector(models.Model):
+    discount = models.ForeignKey(Discount, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.product)+' - '+str(self.discount)
+
+
 #model for Product table
 class Product(models.Model):
     product_title = models.CharField(max_length=255)
     product_price = models.DecimalField(max_digits=8, decimal_places=2)
     product_color = models.CharField(max_length=24)
     product_detail = models.TextField()
-
-    product_category = models.ForeignKey(Category, on_delete = models.SET_NULL, null = True)
-    product_discount = models.ForeignKey(Discount, on_delete = models.SET_NULL, null = True)
-    product_tag = models.ManyToManyField(Tag)
 
     def __str__(self):
         return str(self.product_title)

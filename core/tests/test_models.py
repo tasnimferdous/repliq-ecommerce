@@ -12,6 +12,12 @@ def create_user(email = 'test@example.com', password = 'pass123'):
     """Create & return a new user"""
     return get_user_model().objects.create_user(email, password)
 
+
+def create_super_user(email='user@example.com', password='testpass123'):
+    """Create and return a user."""
+    user = get_user_model().objects.create_superuser(email = email, password = password)
+    return user
+
 class ModelTests(TestCase):
     """ Test model. """
     def test_create_user_with_email_successful(self):
@@ -54,7 +60,9 @@ class ModelTests(TestCase):
 
     def test_create_category(self):
         """Test for creating category"""
+        user = create_super_user('test@example.com', 'pass123')
         category = models.Category.objects.create(
+            user = user,
             category_name = 'test category',
         )
         self.assertEqual(str(category), category.category_name)
@@ -62,13 +70,16 @@ class ModelTests(TestCase):
 
     def test_create_tag(self):
         """Test for creating tag"""
+        user = create_super_user('test@example.com', 'pass123')
         tag = models.Tag.objects.create(
+            user = user,
             tag_name = 'test tag',
         )
         self.assertEqual(str(tag), tag.tag_name)
 
     def test_create_discount(self):
         """Test for creating discount"""
+        user = create_super_user('test@example.com', 'pass123')
         discount = models.Discount.objects.create(
             discount_title = 'test discount',
             discount_percent = Decimal('20.2')
@@ -77,17 +88,10 @@ class ModelTests(TestCase):
 
     def test_create_product(self):
         """Test creating a product successfully"""
-        category = models.Category.objects.create(category_name='test category')
-        discount = models.Discount.objects.create(
-            discount_title = 'test discount',
-            discount_percent = Decimal('20.2')
-        )
         product = models.Product.objects.create(
             product_title = 'test product',
             product_price = Decimal('5.5'),
             product_color = 'test color',
             product_detail = 'test product detail',
-            product_category = category,
-            product_discount = discount,
         )
         self.assertEqual(str(product), product.product_title)

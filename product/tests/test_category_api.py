@@ -34,6 +34,12 @@ def create_user(email='user@example.com', password='testpass123'):
     return get_user_model().objects.create_user(email=email, password=password)
 
 
+def create_super_user(email='user@example.com', password='testpass123'):
+    """Create and return a user."""
+    user = get_user_model().objects.create_superuser(email = email, password = password)
+    return user
+
+
 class PublicCategoriesApiTests(TestCase):
     """Test unauthenticated API requests."""
 
@@ -51,7 +57,7 @@ class PrivateCategoriesApiTests(TestCase):
     """Test authenticated API requests."""
 
     def setUp(self):
-        self.user = create_user()
+        self.user = create_super_user()
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
